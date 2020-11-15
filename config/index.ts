@@ -1,0 +1,1 @@
+export const MONGO_URI = "mongodb+srv://bergumaster:!Kapi1999@cluster0.0eati.mongodb.net/cluster0";
