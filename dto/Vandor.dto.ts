@@ -8,3 +8,8 @@ phone: string;
 email: string;
 password: string;
 }
+
+export interface LoginVandorInput{
+    email: string;
+    password: string;
+    }
