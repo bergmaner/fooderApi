@@ -38,7 +38,8 @@ const createdVandor = await Vandor.create({
     salt: salt,
     serviceAvailable: false,
     coverImages: [],
-    rating: 0
+    rating: 0,
+    foods: []
 });
 
 return res.json(createdVandor);
