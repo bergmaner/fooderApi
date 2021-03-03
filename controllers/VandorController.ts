@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import { EditVandorInput, LoginVandorInput } from "../dto";
 import { createFoodInputs } from "../dto/Food.dto";
 import { Food } from "../models";
-import { GenerateSignature, ValidatePassword } from "../utillity";
+import { GenerateSignature, ValidatePassword } from "../utility";
 import { FindVandor } from "./AdminController";
 
 export const VandorLogin = async(req: Request ,res: Response,next: NextFunction) => {

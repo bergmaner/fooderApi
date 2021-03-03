@@ -1,4 +1,4 @@
-import express, {Request,Response, NextFunction} from "express";
+import express, { Request,Response, NextFunction } from "express";
 import { GetFoodAvailability, RestaurantById, SearchFoods } from "../controllers";
 
 const router = express.Router();

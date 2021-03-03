@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import { CreateVandorInput } from "../dto";
 import { Vandor } from "../models";
-import {GeneratePassword, GenerateSalt} from "../utillity";
+import { GeneratePassword, GenerateSalt } from "../utility";
 
 export const FindVandor = async(id: string | undefined, email?: string) => {
 
@@ -15,7 +15,7 @@ export const FindVandor = async(id: string | undefined, email?: string) => {
 
 export const CreateVandor = async(req: Request ,res: Response,next: NextFunction) => {
 
-const {name, ownerName, foodType, pinCode, address, phone, email, password} = <CreateVandorInput>req.body;
+const { name, ownerName, foodType, pinCode, address, phone, email, password } = <CreateVandorInput>req.body;
 
 const vandor = await FindVandor("", email);
 
@@ -48,7 +48,7 @@ return res.json(createdVandor);
 
 export const GetVandors = async(req: Request ,res: Response,next: NextFunction) => {
 
-    const vandors = Vandor.find();
+    const vandors = await Vandor.find();
 
     if(vandors !== null){
         return res.json(vandors);
