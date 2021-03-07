@@ -1,9 +1,9 @@
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
 import express, {Request, Response, NextFunction} from "express";
-import { CreateCustomerInputs } from "../dto/Customer.dto";
+import { CreateCustomerInputs, LoginCustomerInputs } from "../dto/Customer.dto";
 import { Customer } from "../models/Customer";
-import { GenerateOtp, GeneratePassword, GenerateSalt, GenerateSignature, onRequestOtp } from "../utility";
+import { GenerateOtp, GeneratePassword, GenerateSalt, GenerateSignature, onRequestOtp, ValidatePassword } from "../utility";
 
 
 export const CustomerSignUp = async(req: Request, res: Response, next: NextFunction) => {
@@ -69,9 +69,72 @@ export const CustomerSignUp = async(req: Request, res: Response, next: NextFunct
 
 export const CustomerLogin = async(req: Request, res: Response, next: NextFunction) => {
 
+    const loginInputs = plainToClass( LoginCustomerInputs, req.body );
+    const loginErrors = await validate(loginInputs, { validationError: { target: false } });
+
+    if(loginErrors.length > 0){
+        return res.status(400).json(loginErrors);
+    }
+
+    const { email, password } = loginInputs;
+    const customer = await Customer.findOne({ email: email });
+
+    if(customer){
+        const validation = await ValidatePassword(password, customer.password, customer.salt);
+    
+        if(validation){
+
+            const signature = GenerateSignature({
+                _id: customer._id,
+                email: customer.email,
+                verified: customer.verified
+            });
+
+            return res.status(201).json({ 
+                signature: signature, 
+                verified: customer.verified,
+                email: customer.email
+            });
+        }
+    }
+
+    return res.status(404).json({ message: "Error with Login" });
+   
 }
 
 export const CustomerVerify = async(req: Request, res: Response, next: NextFunction) => {
+
+    const { otp } = req.body;
+    const customer = req.user;
+
+    if(customer){
+
+        const profile = await Customer.findById(customer._id);
+
+        if(profile){
+            if(profile.otp === parseInt(otp) && profile.otp_expiry >= new Date()){
+                profile.verified = true;
+
+                const updatedCustomerResponse = await profile.save();
+
+                const signature = GenerateSignature({
+                    _id: updatedCustomerResponse._id,
+                    email: updatedCustomerResponse.email,
+                    verified: updatedCustomerResponse.verified
+                });
+
+                return res.status(201).json({ 
+                        siganture: signature,
+                        verified: updatedCustomerResponse.verified,
+                        email: updatedCustomerResponse.email
+                      })
+
+            }
+        }
+
+    }
+
+    return res.status(400).json({ message: "Error with verify" });
 
 }
 

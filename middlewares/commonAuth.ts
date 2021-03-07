@@ -15,8 +15,7 @@ export const Authenticate = async(req: Request, res: Response, next: NextFunctio
     const isValidate = await ValidateSignature(req);
 
     if(isValidate) {
-        console.log("YEEY")
-        next();
+        next()
     }
 else{
     return res.json({"message": "User is not Authorized"});
